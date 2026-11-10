@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Catalog — EnrollX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 text-primary small fw-bold mb-1 text-uppercase tracking-wider">
+                    <i class="bi bi-layers-fill"></i>
+                    <span>Fall 2026 Academic Offerings</span>
+                </div>
+                <h1 class="page-title mb-1">University Course Catalog</h1>
+                <p class="page-subtitle">Inspect live seat availability gauges, instructor schedules, and lock seats in real time.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border p-2">
+                    <i class="bi bi-broadcast text-success me-1"></i>Live Polling Active (10s)
+                </span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container mb-5">
+    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+    <!-- Interactive Filtering & Search Bar -->
+    <div class="card card-enrollx mb-4 shadow-sm border-0" style="border-radius: 16px;">
+        <div class="card-body p-4">
+            <!-- Server-Side Filter Form -->
+            <form th:action="@{/student/courses}" method="get" class="row g-3 align-items-center">
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-secondary mb-1">Academic Semester</label>
+                    <select name="semester" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">-- All Semesters --</option>
+                        <option th:each="sem : ${semesters}" th:value="${sem}" th:text="${sem}"
+                                th:selected="${sem == selectedSemester}"></option>
+                    </select>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-secondary mb-1">Department</label>
+                    <select name="departmentId" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">-- All Departments --</option>
+                        <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.code + ' - ' + dept.name}"
+                                th:selected="${dept.id == selectedDepartmentId}"></option>
+                    </select>
+                </div>
+
+                <div class="col-lg-4 col-md-8">
+                    <label class="form-label small fw-bold text-secondary mb-1">Instant Search</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="instantCourseSearch" name="search" class="form-control border-start-0" 
+                               placeholder="Filter by code or title (e.g. CS301)..." th:value="${searchQuery}">
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 text-end pt-md-4">
+                    <a th:href="@{/student/courses}" class="btn btn-outline-secondary btn-sm w-100 rounded-pill">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                    </a>
+                </div>
+            </form>
+
+            <!-- Department Quick Filter Pills (Instant Client-Side Switcher) -->
+            <div class="d-flex flex-wrap gap-2 mt-3 pt-3 border-top align-items-center">
+                <span class="small fw-bold text-muted me-2"><i class="bi bi-funnel-fill me-1"></i>Quick Filter:</span>
+                <button type="button" class="filter-pill dept-filter-pill active" data-dept-code="ALL">
+                    All Departments
+                </button>
+                <button th:each="dept : ${departments}" type="button" class="filter-pill dept-filter-pill" 
+                        th:attr="data-dept-code=${dept.code}" th:text="${dept.code}">
+                    CS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Offering Cards Grid -->
+    <div class="row g-4" id="coursesGridContainer">
+        <div th:each="offering : ${offerings}" class="col-lg-6 course-offering-card" 
+             th:attr="data-offering-id=${offering.offeringId}, data-course-code=${offering.courseCode}, data-course-title=${offering.courseTitle}, data-dept-code=${offering.departmentCode}">
+            
+            <div class="card card-enrollx h-100">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Header with Department, Code & Semester -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="code-chip" th:text="${offering.courseCode}">CS301</span>
+                                <span class="badge bg-secondary-subtle text-secondary" th:text="${offering.departmentCode}">CS</span>
+                                <span class="badge bg-light text-primary border" th:text="${offering.credits + ' Credits'}">4 Credits</span>
+                            </div>
+                            <span class="badge bg-dark-subtle text-dark font-monospace" th:text="${offering.semester}">Fall 2026</span>
+                        </div>
+
+                        <!-- Course Title -->
+                        <h5 class="fw-extrabold text-dark tracking-tight mb-2" th:text="${offering.courseTitle}">
+                            Database Management Systems
+                        </h5>
+
+                        <!-- Instructor & Schedule Details -->
+                        <div class="p-3 bg-light rounded-3 mb-3 border">
+                            <div class="row g-2 small text-secondary">
+                                <div class="col-sm-6">
+                                    <i class="bi bi-person-fill text-primary me-1"></i>
+                                    <span class="fw-semibold text-dark" th:text="${offering.instructor}">Dr. Edgar Codd</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                                    <span th:text="${offering.room != null ? offering.room : 'Online / TBA'}">Lab 3</span>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <i class="bi bi-calendar-week-fill text-info me-1"></i>
+                                    <span th:text="${offering.schedule != null ? offering.schedule : 'To Be Announced'}">Tue/Thu 11:00 - 12:30</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-Time Capacity & Lock Status Gauge -->
+                        <div class="p-3 rounded-3 mb-3 border" style="background-color: #fafbfc;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small fw-bold text-secondary">
+                                    <i class="bi bi-speedometer2 text-primary me-1"></i>Real-Time Seat Gauge:
+                                </span>
+                                <span th:class="'seat-badge live-available-seats ' + (${offering.availableSeats > 0} ? 'seat-available' : 'seat-full')"
+                                      th:text="${offering.availableSeats + ' Available'}">
+                                    2 Available
+                                </span>
+                            </div>
+
+                            <!-- Visual Capacity Progress Bar -->
+                            <div class="seat-progress">
+                                <div th:class="'progress-bar seat-progress-bar ' + (${offering.availableSeats <= 0} ? 'bg-danger' : (${offering.reservedCount > 0} ? 'bg-warning' : 'bg-primary'))"
+                                     role="progressbar" 
+                                     th:style="'width: ' + ${offering.percentFilled} + '%;'" 
+                                     th:aria-valuenow="${offering.percentFilled}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
+                            <div class="d-flex justify-content-between text-muted small mt-2">
+                                <span>Total Cap: <strong class="text-dark" th:text="${offering.capacity}">3</strong></span>
+                                <span>Confirmed: <strong class="text-success live-enrolled-seats" th:text="${offering.enrolledCount}">1</strong></span>
+                                <span>Temporary Holds: <strong class="text-warning live-reserved-seats" th:text="${offering.reservedCount}">0</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-2">
+                        <a th:href="@{'/student/courses/' + ${offering.offeringId}}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                            <i class="bi bi-info-circle me-1"></i>Syllabus & Details
+                        </a>
+
+                        <div>
+                            <!-- State 1: Student is already confirmed in this course -->
+                            <span th:if="${offering.alreadyEnrolled}" class="badge bg-success-subtle text-success border border-success-subtle py-2 px-3 rounded-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i>Already Enrolled
+                            </span>
+
+                            <!-- State 2: Student holds an active temporary lock for this course -->
+                            <a th:if="${!offering.alreadyEnrolled && offering.hasActiveReservation}" 
+                               th:href="@{'/student/reservation/' + ${offering.activeReservationId}}" 
+                               class="btn btn-warning btn-sm fw-bold px-3 shadow-sm rounded-pill">
+                                <i class="bi bi-hourglass-split me-1"></i>Resume Hold
+                            </a>
+
+                            <!-- State 3: Course is completely booked -->
+                            <button th:if="${!offering.alreadyEnrolled && !offering.hasActiveReservation && offering.full}" 
+                                    class="btn btn-secondary btn-sm disabled rounded-pill px-3 btn-reserve-seat" disabled>
+                                <i class="bi bi-slash-circle me-1"></i>Course Full
+                            </button>
+
+                            <!-- State 4: Seats Available -> Acquire Exclusive Pessimistic Write Lock -->
+                            <form th:if="${!offering.alreadyEnrolled && !offering.hasActiveReservation && !offering.full}" 
+                                  th:action="@{'/student/reserve/' + ${offering.offeringId}}" method="post" class="d-inline m-0">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-primary-enrollx btn-sm rounded-pill px-3 btn-reserve-seat">
+                                    <i class="bi bi-lock-fill me-1"></i>Lock & Reserve Seat
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Empty State (When instant filter has no results) -->
+        <div id="clientEmptyCourses" class="col-12 text-center py-5 d-none">
+            <div class="card card-enrollx p-5">
+                <i class="bi bi-search text-muted fs-1 mb-3"></i>
+                <h5 class="fw-bold">No Course Offerings Match Your Search</h5>
+                <p class="text-muted small">Try adjusting your keyword or selecting a different department pill above.</p>
+            </div>
+        </div>
+
+        <!-- Server-side Empty State -->
+        <div th:if="${#lists.isEmpty(offerings)}" class="col-12 text-center py-5">
+            <div class="card card-enrollx p-5">
+                <i class="bi bi-journal-x text-muted fs-1 mb-3"></i>
+                <h5 class="fw-bold">No Course Offerings Available</h5>
+                <p class="text-muted small">No courses found matching the selected filter criteria.</p>
+                <div class="mt-2">
+                    <a th:href="@{/student/courses}" class="btn btn-outline-primary btn-sm rounded-pill px-4">Clear All Filters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

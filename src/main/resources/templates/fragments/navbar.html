@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark navbar-enrollx sticky-top">
+    <div class="container-fluid px-lg-4">
+        <!-- Brand Logo & Real-Time Engine Indicator -->
+        <a class="navbar-brand" th:href="@{/}">
+            <div class="brand-logo-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+                <span class="fw-bold tracking-tight">EnrollX</span>
+                <span class="brand-badge ms-2">
+                    <span class="status-dot-pulse"></span>
+                    <span>Pessimistic Lock Engine</span>
+                </span>
+            </div>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Student Portal Navigation Links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3" sec:authorize="hasRole('STUDENT')">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/student/dashboard}">
+                        <i class="bi bi-grid-fill text-indigo-400"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/student/courses}">
+                        <i class="bi bi-book-half text-sky-400"></i>
+                        <span>Course Catalog</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/student/my-courses}">
+                        <i class="bi bi-check-circle-fill text-emerald-400"></i>
+                        <span>My Schedule</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/student/history}">
+                        <i class="bi bi-clock-history text-amber-400"></i>
+                        <span>Audit Log</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Administrator Portal Navigation Links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3" sec:authorize="hasRole('ADMIN')">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/dashboard}">
+                        <i class="bi bi-speedometer2 text-indigo-400"></i>
+                        <span>Admin Console</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/courses}">
+                        <i class="bi bi-journal-code text-cyan-400"></i>
+                        <span>Master Courses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/offerings}">
+                        <i class="bi bi-calendar3-range text-sky-400"></i>
+                        <span>Course Sections</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/enrollments}">
+                        <i class="bi bi-card-checklist text-emerald-400"></i>
+                        <span>Enrollments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/students}">
+                        <i class="bi bi-people-fill text-amber-400"></i>
+                        <span>Students</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Authenticated User Profile Avatar & Logout -->
+            <div class="d-flex align-items-center gap-3 ms-auto" sec:authorize="isAuthenticated()">
+                <div class="user-avatar-chip d-none d-md-inline-flex">
+                    <div class="user-avatar-circle" sec:authentication="name" th:text="${#strings.substring(#authentication.name,0,1).toUpperCase()}">
+                        U
+                    </div>
+                    <div class="text-start me-1">
+                        <div class="fw-bold small text-white lh-1" sec:authentication="name">Username</div>
+                        <span class="badge bg-success-subtle text-success p-0 mt-1" style="font-size: 0.68rem;" sec:authorize="hasRole('STUDENT')">Verified Student</span>
+                        <span class="badge bg-danger-subtle text-danger p-0 mt-1" style="font-size: 0.68rem;" sec:authorize="hasRole('ADMIN')">System Admin</span>
+                    </div>
+                </div>
+
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 d-inline-flex align-items-center gap-1 shadow-sm">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Public Visitors (Not logged in) -->
+            <div class="d-flex align-items-center gap-2 ms-auto" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                </a>
+                <a th:href="@{/register}" class="btn btn-primary-enrollx btn-sm rounded-pill px-3">
+                    <i class="bi bi-person-plus-fill me-1"></i>Student Sign Up
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

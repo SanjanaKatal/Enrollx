@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Console — EnrollX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Header -->
+<header class="page-header">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 text-danger small fw-bold mb-1 text-uppercase tracking-wider">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Administrative Superuser Panel</span>
+                </div>
+                <h1 class="page-title mb-1">EnrollX System Control Dashboard</h1>
+                <p class="page-subtitle">Real-time database transaction monitoring, concurrency control telemetry, and section quotas.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/admin/courses}" class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i>New Course
+                </a>
+                <a th:href="@{/admin/offerings}" class="btn btn-primary-enrollx btn-sm rounded-pill px-3 shadow-sm">
+                    <i class="bi bi-calendar-plus me-1"></i>New Section Offering
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container mb-5">
+    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+    <!-- 5 Gradient Metric KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg">
+            <div class="stat-card-gradient indigo">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="display-6 fw-extrabold" th:text="${totalStudents}">0</div>
+                        <div class="small fw-semibold opacity-75">Registered Students</div>
+                    </div>
+                    <i class="bi bi-people-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg">
+            <div class="stat-card-gradient cyan">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="display-6 fw-extrabold" th:text="${totalCourses}">0</div>
+                        <div class="small fw-semibold opacity-75">Catalog Courses</div>
+                    </div>
+                    <i class="bi bi-journal-bookmark-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg">
+            <div class="stat-card-gradient emerald">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="display-6 fw-extrabold" th:text="${activeOfferings}">0</div>
+                        <div class="small fw-semibold opacity-75">Active Sections</div>
+                    </div>
+                    <i class="bi bi-calendar3-range fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg">
+            <div class="stat-card-gradient amber">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="display-6 fw-extrabold" th:text="${confirmedEnrollments}">0</div>
+                        <div class="small fw-semibold opacity-75">Total Enrollments</div>
+                    </div>
+                    <i class="bi bi-card-checklist fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg">
+            <div class="stat-card-gradient rose">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="display-6 fw-extrabold" th:text="${activeReservations}">0</div>
+                        <div class="small fw-semibold opacity-75">Active Seat Holds</div>
+                    </div>
+                    <i class="bi bi-hourglass-split fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics & Live Monitor Row -->
+    <div class="row g-4">
+        <!-- Course Registration Popularity Ranking -->
+        <div class="col-lg-6">
+            <div class="card card-enrollx h-100 shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header-clean bg-white">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-bar-chart-line-fill text-primary"></i>
+                        <span class="fw-bold">Course Demand & Enrollment Statistics</span>
+                    </div>
+                    <a th:href="@{/admin/enrollments}" class="btn btn-sm btn-link text-decoration-none">All Records</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-enrollx">
+                            <thead>
+                            <tr>
+                                <th>Course Offering</th>
+                                <th>Term</th>
+                                <th>Confirmed Students</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="stat : ${popularCourses}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="code-chip code-chip-sm" th:text="${stat[1]}">CS301</span>
+                                        <div>
+                                            <span class="fw-bold text-dark d-block small" th:text="${stat[2]}">DBMS</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="small font-monospace" th:text="${stat[3]}">Fall 2026</td>
+                                <td>
+                                    <span class="badge bg-primary px-3 py-1 rounded-pill fw-bold" th:text="${stat[4] + ' Students'}">1 Students</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(popularCourses)}">
+                                <td colspan="3" class="text-center py-4 text-muted small">No enrollment statistics available yet.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-Time Active Holds Telemetry Monitor -->
+        <div class="col-lg-6">
+            <div class="card card-enrollx h-100 shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header-clean bg-white">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="status-dot-pulse"></span>
+                        <span class="fw-bold">Live Active Seat Reservations</span>
+                    </div>
+                    <span class="badge bg-warning-subtle text-warning font-monospace" style="font-size: 0.7rem;">InnoDB Row Locks</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-enrollx">
+                            <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Student</th>
+                                <th>Hold Placed</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="res : ${recentReservations}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="code-chip code-chip-sm" th:text="${res.courseOffering.course.code}">CS301</span>
+                                        <span class="small text-muted font-monospace" th:text="${res.courseOffering.semester}">Fall 2026</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bold d-block small" th:text="${res.user.fullName}">Alice</span>
+                                    <span class="text-muted font-monospace" style="font-size: 0.72rem;" th:text="${res.user.username}">student1</span>
+                                </td>
+                                <td class="small text-muted font-monospace" th:text="${#temporals.format(res.reservedAt, 'HH:mm:ss')}">14:02:11</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark px-2 py-1">
+                                        <i class="bi bi-hourglass-split me-1"></i>PENDING HOLD
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recentReservations)}">
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-check-circle-fill text-success fs-3 d-block mb-2"></i>
+                                    <span class="fw-bold d-block text-dark">No Active Locks</span>
+                                    <small class="text-muted">No pending seat reservations right now. All available seats are idle and accessible.</small>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

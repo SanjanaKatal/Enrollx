@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${offering.courseCode + ' — Details — EnrollX'}">Course Details - EnrollX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Header -->
+<header class="page-header">
+    <div class="container">
+        <a th:href="@{/student/courses}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 mb-3">
+            <i class="bi bi-arrow-left me-1"></i>Back to Course Catalog
+        </a>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="code-chip" th:text="${offering.courseCode}">CS301</span>
+                    <span class="badge bg-secondary-subtle text-secondary" th:text="${offering.departmentName}">Computer Science</span>
+                    <span class="badge bg-light text-primary border" th:text="${offering.credits + ' Credit Hours'}">4 Credits</span>
+                </div>
+                <h1 class="page-title mb-1" th:text="${offering.courseTitle}">Database Management Systems</h1>
+                <p class="page-subtitle">
+                    <i class="bi bi-person-badge me-1"></i>Instructor: <strong class="text-dark" th:text="${offering.instructor}">Dr. Edgar Codd</strong> &bull;
+                    <i class="bi bi-calendar3 ms-2 me-1"></i>Term: <strong class="text-dark" th:text="${offering.semester + ' (' + offering.academicYear + ')'}">Fall 2026</strong>
+                </p>
+            </div>
+            <div>
+                <span th:class="'seat-badge fs-6 ' + (${offering.availableSeats > 0} ? 'seat-available' : 'seat-full')"
+                      th:text="${offering.availableSeats + ' Seats Available'}">
+                    2 Seats Available
+                </span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container mb-5">
+    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+    <div class="row g-4">
+        <!-- Course Description & Academic Syllabus -->
+        <div class="col-lg-8">
+            <div class="card card-enrollx mb-4 shadow-sm border-0">
+                <div class="card-header-clean">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-journal-text text-primary"></i>
+                        <span>Course Description & Core Modules</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <p class="lead fs-6 text-secondary mb-4">
+                        This course provides comprehensive coverage of relational database architecture, entity-relationship modeling,
+                        formal relational algebra, SQL optimization, normalization (1NF up to 3NF/BCNF), ACID transaction semantics,
+                        and pessimistic vs optimistic concurrency control algorithms.
+                    </p>
+
+                    <h6 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>Key DBMS Concepts Demonstrated in this Course:
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 border h-100">
+                                <span class="fw-bold small text-dark d-block mb-1">
+                                    <i class="bi bi-lock-fill text-warning me-1"></i>Pessimistic Concurrency Control
+                                </span>
+                                <span class="small text-muted">
+                                    Row-level write locks (<code>SELECT ... FOR UPDATE</code>) on course section rows serialize concurrent seat reservations.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 border h-100">
+                                <span class="fw-bold small text-dark d-block mb-1">
+                                    <i class="bi bi-shield-check text-success me-1"></i>ACID Transaction Boundaries
+                                </span>
+                                <span class="small text-muted">
+                                    Atomic execution with <code>@Transactional(isolation = READ_COMMITTED)</code> guaranteeing durability and zero overbooking.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 border h-100">
+                                <span class="fw-bold small text-dark d-block mb-1">
+                                    <i class="bi bi-diagram-3-fill text-primary me-1"></i>Normalized 3NF Schema
+                                </span>
+                                <span class="small text-muted">
+                                    Eliminates partial and transitive functional dependencies across courses, offerings, holds, and enrollments.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 border h-100">
+                                <span class="fw-bold small text-dark d-block mb-1">
+                                    <i class="bi bi-lightning-charge-fill text-info me-1"></i>Time-To-Live (TTL) Holds
+                                </span>
+                                <span class="small text-muted">
+                                    Dynamic seat release after 5 minutes evaluated via server-side timestamps without waiting on background cron jobs.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offering Logistics Table -->
+            <div class="card card-enrollx shadow-sm border-0">
+                <div class="card-header-clean">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar-event text-primary"></i>
+                        <span>Classroom & Section Logistics</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-enrollx">
+                        <tbody>
+                        <tr>
+                            <td class="fw-bold text-secondary" style="width: 220px;">Semester & Year</td>
+                            <td class="fw-semibold text-dark" th:text="${offering.semester + ' (' + offering.academicYear + ')'}">Fall 2026</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-secondary">Course Instructor</td>
+                            <td class="fw-semibold text-dark" th:text="${offering.instructor}">Dr. Edgar Codd</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-secondary">Room / Location</td>
+                            <td th:text="${offering.room != null ? offering.room : 'Online'}">Lab 3</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-secondary">Classroom Schedule</td>
+                            <td th:text="${offering.schedule != null ? offering.schedule : 'To Be Announced'}">Tue/Thu 11:00 - 12:30</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-secondary">Academic Department</td>
+                            <td th:text="${offering.departmentName + ' (' + offering.departmentCode + ')'}">Computer Science</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Seat Capacity Card -->
+        <div class="col-lg-4">
+            <div class="card card-enrollx sticky-top shadow-sm border-0" style="top: 90px; border-radius: 16px;">
+                <div class="card-header-clean">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-speedometer2 text-primary"></i>
+                        <span>Live Seat Allocation</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="p-3 rounded-3 text-center mb-3" style="background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); border: 1px solid #c7d2fe;">
+                        <span class="text-secondary small fw-bold text-uppercase tracking-wider">Available Seats</span>
+                        <div class="display-4 fw-extrabold text-primary my-1" th:text="${offering.availableSeats}">2</div>
+                        <span class="text-muted small">Updated in real-time from MySQL</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-secondary">Classroom Capacity</span>
+                        <strong class="text-dark" th:text="${offering.capacity}">3</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-secondary">Confirmed Registrations</span>
+                        <strong class="text-success" th:text="${offering.enrolledCount}">1</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small">
+                        <span class="text-secondary">Active Seat Holds</span>
+                        <strong class="text-warning" th:text="${offering.reservedCount}">0</strong>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="seat-progress mb-4">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             th:style="'width: ' + ${offering.percentFilled} + '%;'" 
+                             th:aria-valuenow="${offering.percentFilled}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div th:if="${offering.alreadyEnrolled}" class="text-center">
+                        <div class="p-3 bg-success-subtle text-success rounded-3 mb-2 fw-bold">
+                            <i class="bi bi-check-circle-fill me-1"></i>You are Enrolled in this Course
+                        </div>
+                        <a th:href="@{/student/my-courses}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                            View in Schedule
+                        </a>
+                    </div>
+
+                    <div th:if="${!offering.alreadyEnrolled && offering.hasActiveReservation}" class="text-center">
+                        <a th:href="@{'/student/reservation/' + ${offering.activeReservationId}}" 
+                           class="btn btn-warning w-100 py-3 fw-bold shadow-sm rounded-pill">
+                            <i class="bi bi-hourglass-split me-1"></i>View Active Hold (Confirm)
+                        </a>
+                    </div>
+
+                    <div th:if="${!offering.alreadyEnrolled && !offering.hasActiveReservation}">
+                        <form th:if="${!offering.full}" th:action="@{'/student/reserve/' + ${offering.offeringId}}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn btn-primary-enrollx w-100 py-3 fw-bold rounded-pill">
+                                <i class="bi bi-lock-fill me-1"></i>Lock & Reserve Seat (5 Min)
+                            </button>
+                        </form>
+                        <button th:if="${offering.full}" class="btn btn-secondary w-100 py-3 disabled rounded-pill" disabled>
+                            <i class="bi bi-slash-circle me-1"></i>Course Completely Booked
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

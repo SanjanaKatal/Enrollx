@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="alerts">
+    <!-- Success Alert -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show alert-auto-dismiss mb-4 shadow-sm border-0 border-start border-success border-4" role="alert" style="background-color: #ecfdf5; border-radius: 12px;">
+        <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; flex-shrink: 0;">
+                <i class="bi bi-check-lg fw-bold"></i>
+            </div>
+            <div>
+                <strong class="d-block text-success fw-bold">Transaction Completed</strong>
+                <span class="text-dark small" th:text="${successMessage}">Operation completed successfully.</span>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Error Alert -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm border-0 border-start border-danger border-4" role="alert" style="background-color: #fef2f2; border-radius: 12px;">
+        <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-danger text-white p-2 d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; flex-shrink: 0;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>
+                <strong class="d-block text-danger fw-bold">Notice / Action Required</strong>
+                <span class="text-dark small" th:text="${errorMessage}">An error occurred.</span>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Info Alert -->
+    <div th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show alert-auto-dismiss mb-4 shadow-sm border-0 border-start border-info border-4" role="alert" style="background-color: #ecfeff; border-radius: 12px;">
+        <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-info text-white p-2 d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; flex-shrink: 0;">
+                <i class="bi bi-info-circle-fill"></i>
+            </div>
+            <div>
+                <strong class="d-block text-info fw-bold">System Information</strong>
+                <span class="text-dark small" th:text="${infoMessage}">Notice message.</span>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+</body>
+</html>

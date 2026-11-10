@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="footer-enrollx mt-auto">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6 text-center text-lg-start">
+                <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-2 mb-2">
+                    <span class="brand-logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </span>
+                    <span class="fw-bold text-white fs-5">EnrollX</span>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace ms-1">v1.0.0</span>
+                </div>
+                <p class="text-secondary small mb-2">
+                    University Course Registration System demonstrating <strong>Pessimistic Row-Level Locking (<code class="text-info">SELECT ... FOR UPDATE</code>)</strong>,
+                    ACID transactions, and zero-overbooking guarantees for high-concurrency database scenarios.
+                </p>
+                <div class="text-muted small">
+                    Academic Year 2026-2027 &bull; DBMS Project Submission & Viva Demonstration
+                </div>
+            </div>
+
+            <div class="col-lg-6 text-center text-lg-end">
+                <div class="mb-2">
+                    <span class="text-uppercase small fw-bold text-secondary me-2 d-block d-sm-inline mb-2 mb-sm-0">DBMS Technology Stack:</span>
+                    <span class="tech-badge"><i class="bi bi-database me-1 text-primary"></i>MySQL 8 (InnoDB)</span>
+                    <span class="tech-badge"><i class="bi bi-cpu me-1 text-success"></i>Spring Boot 3.2</span>
+                    <span class="tech-badge"><i class="bi bi-diagram-3 me-1 text-info"></i>Hibernate JPA</span>
+                    <span class="tech-badge"><i class="bi bi-shield-check me-1 text-warning"></i>Spring Security 6</span>
+                    <span class="tech-badge"><i class="bi bi-file-earmark-code me-1 text-danger"></i>Thymeleaf</span>
+                </div>
+                <div class="small text-muted mt-2">
+                    <span>Designed with ACID Compliance &bull; Third Normal Form (3NF) &bull; Concurrency Control</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
